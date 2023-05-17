@@ -17,7 +17,7 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
     bool public soulbound = true;
 
     uint256 public mintPrice = 8 ether;
-    uint256 public punkPerMint = 500;
+    uint256 public punkPerMint = 500 ether;
     uint256 public constant maxSupply = 10000;
 
     uint256 public claimStartDate;
@@ -32,10 +32,9 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
     mapping(address => uint256) public whitelist;
     mapping(address => uint256) public claimed;
 
-    constructor(
-        address payable _receiver,
-        IERC20 _punkToken
-    ) ERC721("Not Bored Ape Yacht Club", "NBAYC") {
+    constructor(address payable _receiver, IERC20 _punkToken)
+        ERC721("Not Bored Ape Yacht Club", "NBAYC")
+    {
         receiver = _receiver;
         punkToken = _punkToken;
     }
@@ -56,8 +55,7 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
 
     function claim() public nonReentrant {
         require(
-            block.timestamp >= claimStartDate &&
-                block.timestamp <= claimEndDate,
+            block.timestamp >= claimStartDate && block.timestamp < claimEndDate,
             "Claim period not active"
         );
 
@@ -89,10 +87,10 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
         }
     }
 
-    function withdrawERC20Tokens(
-        address _tokenAddress,
-        uint256 _amount
-    ) public onlyOwner {
+    function withdrawERC20Tokens(address _tokenAddress, uint256 _amount)
+        public
+        onlyOwner
+    {
         IERC20 token = IERC20(_tokenAddress);
         require(
             token.balanceOf(address(this)) >= _amount,
@@ -148,10 +146,10 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
         claimEndDate = _end;
     }
 
-    function addToWhitelist(
-        address[] memory users,
-        uint256[] memory amounts
-    ) public onlyOwner {
+    function addToWhitelist(address[] memory users, uint256[] memory amounts)
+        public
+        onlyOwner
+    {
         require(
             users.length == amounts.length,
             "Users and amounts arrays must have the same length"
@@ -194,9 +192,13 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
         return "https://nft.nbayc.io/";
     }
 
-    function tokenURI(
-        uint256 _tokenId
-    ) public view virtual override returns (string memory) {
+    function tokenURI(uint256 _tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
         string memory currentBaseURI = _baseURI();
         return
             bytes(currentBaseURI).length > 0
@@ -208,6 +210,10 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
                     )
                 )
                 : "";
+    }
+
+    function getCurrentBlockTimestamp() public view returns (uint256) {
+        return block.timestamp;
     }
 
     function transferFrom(

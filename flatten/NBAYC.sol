@@ -1,6 +1,4 @@
 // SPDX-License-Identifier: MIT
-
-// File @openzeppelin/contracts/utils/Context.sol@v4.8.3
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 
 pragma solidity ^0.8.0;
@@ -2315,7 +2313,7 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
     bool public soulbound = true;
 
     uint256 public mintPrice = 8 ether;
-    uint256 public punkPerMint = 500;
+    uint256 public punkPerMint = 500 ether;
     uint256 public constant maxSupply = 10000;
 
     uint256 public claimStartDate;
@@ -2354,8 +2352,7 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
 
     function claim() public nonReentrant {
         require(
-            block.timestamp >= claimStartDate &&
-                block.timestamp <= claimEndDate,
+            block.timestamp >= claimStartDate && block.timestamp < claimEndDate,
             "Claim period not active"
         );
 
@@ -2506,6 +2503,10 @@ contract NBAYC is ERC721Enumerable, Ownable, ReentrancyGuard {
                     )
                 )
                 : "";
+    }
+
+    function getCurrentBlockTimestamp() public view returns (uint256) {
+        return block.timestamp;
     }
 
     function transferFrom(
